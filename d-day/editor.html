@@ -71,7 +71,7 @@
         if (bgColorValue !== "#ffffff")
           params.set("bg", bgColorValue.substring(1));
 
-        const baseURL = `${window.location.origin}/notion/d-day`;
+        const baseURL = `${window.location.origin}/d-day/`;
         const fullURL = `${baseURL}?${params.toString()}`;
 
         document.getElementById("link").href = fullURL;
