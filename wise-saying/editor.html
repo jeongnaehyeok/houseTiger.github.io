@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>데일리 명언 설정</title>
+    <style>
+      .container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+        margin-top: 20px;
+      }
+      .wrapper {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      #generatedLink {
+        margin-top: 20px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="wrapper">
+        <label for="size">글자 크기:</label>
+        <input type="number" id="size" min="1" value="3" /> <span>rem</span>
+      </div>
+      <div class="wrapper">
+        <label for="color">글자 색상:</label>
+        <input type="color" id="color" value="#000000" />
+      </div>
+      <div class="wrapper">
+        <label for="bg">배경 색상:</label>
+        <input type="color" id="bg" value="#ffffff" />
+      </div>
+      <div class="wrapper">
+        <label for="saying">명언 선택:</label>
+        <select id="saying">
+          <option value="">선택</option>
+        </select>
+      </div>
+      <button id="submit">생성</button>
+      <div id="generatedLink">
+        <a href="#" id="link">생성된 주소</a>
+        <button id="copy">복사</button>
+      </div>
+    </div>
+    <script>
+      fetch("./saying.json")
+        .then((response) => response.json())
+        .then((data) => {
+          const select = document.getElementById("saying");
+          data.data.forEach((item, index) => {
+            const option = document.createElement("option");
+            option.value = index;
+            option.textContent = item.saying + " - " + item.auth;
+            select.appendChild(option);
+          });
+        });
+
+      document.getElementById("submit").addEventListener("click", function () {
+        const size = document.getElementById("size").value;
+        const colorValue = document.getElementById("color").value;
+        const bgColorValue = document.getElementById("bg").value;
+        const saying = document.getElementById("saying").value;
+
+        let params = new URLSearchParams();
+
+        if (size && size !== "3") params.set("size", size);
+        if (colorValue !== "#000000")
+          params.set("color", colorValue.substring(1));
+        if (bgColorValue !== "#ffffff")
+          params.set("bg", bgColorValue.substring(1));
+        if (saying) params.set("saying", saying);
+
+        const baseURL = `${window.location.origin}/wise-saying/`;
+        const fullURL = `${baseURL}?${params.toString()}`;
+
+        document.getElementById("link").href = fullURL;
+        document.getElementById("link").textContent = fullURL;
+      });
+
+      document.getElementById("copy").addEventListener("click", function () {
+        const url = document.getElementById("link").href;
+        navigator.clipboard.writeText(url).then(() => {
+          alert("주소가 복사되었습니다!");
+        });
+      });
+    </script>
+  </body>
+</html>

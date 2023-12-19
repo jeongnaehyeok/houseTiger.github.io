@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <link
+      rel="stylesheet"
+      as="style"
+      crossorigin
+      href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css"
+    />
+    <title>데일리 명언</title>
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        user-select: none;
+        font-family: "Pretendard Variable", sans-serif;
+      }
+      .container {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        gap: 1rem;
+        width: 100vw;
+        height: 100vh;
+      }
+      p {
+        margin: 0;
+      }
+      #saying {
+        text-align: center;
+        font-size: 3rem;
+        word-break: keep-all;
+      }
+      #auth {
+        font-weight: 300;
+        text-align: center;
+        font-size: 1.5rem;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <p id="saying">Loading...</p>
+      <p id="auth">made by 방구석 호랑이</p>
+    </div>
+  </body>
+  <script>
+    document.addEventListener("DOMContentLoaded", (event) => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const size = urlParams.get("size") || "3";
+      let color = urlParams.get("color") || "black";
+      let bg = urlParams.get("bg") || "white";
+      let id = urlParams.get("saying");
+
+      if (/^[0-9A-F]{6}$/i.test(color)) {
+        color = `#${color}`;
+      }
+      if (/^[0-9A-F]{6}$/i.test(bg)) {
+        bg = `#${bg}`;
+      }
+      if (!/^[0-9]+$/.test(id)) {
+        id = null;
+      } else {
+        id = parseInt(id);
+      }
+
+      const container = document.querySelector(".container");
+      container.style.color = color;
+      container.style.backgroundColor = bg;
+      container.style.gap = `${size * 0.5}rem`;
+
+      const saying = document.querySelector("#saying");
+      saying.style.fontSize = `${size}rem`;
+
+      const auth = document.querySelector("#auth");
+      auth.style.fontSize = `${size * 0.5}rem`;
+
+      const data = fetch("./saying.json")
+        .then((res) => res.json())
+        .then((parseData) => {
+          const data = parseData.data;
+          let sayingData = null;
+          if (id !== null) {
+            sayingData = data[id];
+          } else {
+            const today = new Date();
+            const year = today.getFullYear();
+            const month = today.getMonth() + 1;
+            const day = today.getDate();
+
+            const index = (year + month + day) % data.length;
+            sayingData = data[index];
+          }
+          saying.innerText = sayingData.saying;
+          auth.innerText = "- " + sayingData.auth + " -";
+        });
+    });
+  </script>
+</html>
